@@ -4,14 +4,6 @@
 # Get-NetFirewallRule >> x.txt to see what the empty paths are referencing.
 #
 
-# Disable NetBIOS
-ForEach ($adapter In Get-WmiObject -Class Win32_NetWorkAdapterConfiguration -Filter "IPEnabled=$true" | Select-Object -Property Description,TcpipNetbiosOptions) {
-    If($adapter.TcpipNetbiosOptions -ne 2) {
-        $adapter.TcpipNetbiosOptions = 2
-        Write-Host "NetBIOS disabled on"$adapter.Description
-    }
-}
-
 ForEach($rule In Get-NetFirewallRule | Get-NetFirewallApplicationFilter) {
     If(-not $rule.AppPath) { # UWP apps have no paths.
         If($rule.CreationClassName.Substring(0, 22) -ne 'MSFT|FW|FirewallRule|{') { # Crude check for Windows 10 apps.
